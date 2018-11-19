@@ -3,19 +3,19 @@ session_start();
 require_once('database.php');
 $database = new Database();
 if (isset($_POST) && !empty($_POST)) {
-
+    /* kiểm tra xem có dữ liệu không*/
     if (isset($_POST['action'])) {
-        switch($_POST['action']) {
+        switch ($_POST['action']) {
             case 'add' :
-                if ( isset($_POST['quantity']) && isset($_POST['product_id']) ) {
-                    $sql = "SELECT * FROM products WHERE id=". (int)$_POST['product_id'];
+                if (isset($_POST['quantity']) && isset($_POST['product_id'])) {
+                    $sql = "SELECT * FROM products WHERE id=" . (int)$_POST['product_id'];
                     $product = $database->runQuery($sql);
                     $product = current($product);
                     $product_id = $product['id'];
-                    if ( isset($_SESSION['cart_item']) && !empty($_SESSION['cart_item']) ) {
-
+                    if (isset($_SESSION['cart_item']) && !empty($_SESSION['cart_item'])) {
+                        /* khi có dữ liệu*/
                         if (isset($_SESSION['cart_item'][$product_id])) {
-
+                            /* sản phẩm tồn tại rồi*/
                             $exist_cart_item = $_SESSION['cart_item'][$product_id];
                             $exist_quantity = $exist_cart_item['quantity'];
                             $cart_item = array();
@@ -23,9 +23,10 @@ if (isset($_POST) && !empty($_POST)) {
                             $cart_item['product_name'] = $product['product_name'];
                             $cart_item['product_image'] = $product['product_image'];
                             $cart_item['price'] = $product['price'];
-                            $cart_item['quantity'] =  $exist_quantity + $_POST['quantity'];
+                            $cart_item['quantity'] = $exist_quantity + $_POST['quantity'];
                             $_SESSION['cart_item'][$product_id] = $cart_item;
                         } else {
+                            /* sản phẩm không tồn tại rồi*/
                             $cart_item = array();
                             $cart_item['id'] = $product['id'];
                             $cart_item['product_name'] = $product['product_name'];
@@ -35,6 +36,7 @@ if (isset($_POST) && !empty($_POST)) {
                             $_SESSION['cart_item'][$product_id] = $cart_item;
                         }
                     } else {
+                        /* khi k có dữ liệu*/
                         $_SESSION['cart_item'] = array();
                         $cart_item = array();
                         $cart_item['id'] = $product['id'];
@@ -57,8 +59,10 @@ if (isset($_POST) && !empty($_POST)) {
             default:
                 echo 'Action không tồn tại';
                 die;
+
         }
     }
 }
 header("http://localhost:1337/nguyenmaii/simplephpcart/index.php");
 die();
+
